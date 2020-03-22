@@ -98,19 +98,6 @@ func driverStateToApplicationState(podStatus apiv1.PodStatus) v1beta2.Applicatio
 	case apiv1.PodPending:
 		return v1beta2.SubmittedState
 	case apiv1.PodRunning:
-		// TODO: upcoming Kubernenetes feature will make this code redundant
-		// https://github.com/kubernetes/enhancements/issues/753
-		for _, c := range podStatus.ContainerStatuses {
-			if c.Name == config.SparkDriverContainerName {
-				if c.State.Terminated != nil {
-					if c.State.Terminated.ExitCode == 0 {
-						return v1beta2.SucceedingState
-					}
-					return v1beta2.FailingState
-				}
-				break
-			}
-		}
 		return v1beta2.RunningState
 	case apiv1.PodSucceeded:
 		return v1beta2.SucceedingState
