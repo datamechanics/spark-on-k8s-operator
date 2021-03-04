@@ -158,11 +158,6 @@ func (in *DriverSpec) DeepCopyInto(out *DriverSpec) {
 		*out = new(string)
 		**out = **in
 	}
-	if in.Lifecycle != nil {
-		in, out := &in.Lifecycle, &out.Lifecycle
-		*out = new(v1.Lifecycle)
-		(*in).DeepCopyInto(*out)
-	}
 	if in.KubernetesMaster != nil {
 		in, out := &in.KubernetesMaster, &out.KubernetesMaster
 		*out = new(string)
@@ -946,6 +941,11 @@ func (in *SparkPodSpec) DeepCopyInto(out *SparkPodSpec) {
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
+	}
+	if in.Lifecycle != nil {
+		in, out := &in.Lifecycle, &out.Lifecycle
+		*out = new(v1.Lifecycle)
+		(*in).DeepCopyInto(*out)
 	}
 	return
 }

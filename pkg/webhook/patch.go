@@ -741,23 +741,18 @@ func addPodLifeCycleConfig(pod *corev1.Pod, app *v1beta2.SparkApplication) *patc
 	var lifeCycle *corev1.Lifecycle
 	if util.IsDriverPod(pod) {
 		lifeCycle = app.Spec.Driver.Lifecycle
+	} else if util.IsExecutorPod(pod) {
+		lifeCycle = app.Spec.Executor.Lifecycle
 	}
 	if lifeCycle == nil {
 		return nil
 	}
 
-	i := 0
-	// Find the driver container in the pod.
-	for ; i < len(pod.Spec.Containers); i++ {
-		if pod.Spec.Containers[i].Name == config.SparkDriverContainerName {
-			break
-		}
-	}
-	if i == len(pod.Spec.Containers) {
-		glog.Warningf("Spark driver container not found in pod %s", pod.Name)
+	i := findContainer(pod)
+	if i < 0 {
+		glog.Warningf("not able to add Lifecycle as Spark container was not found in pod %s", pod.Name)
 		return nil
 	}
-
 	path := fmt.Sprintf("/spec/containers/%d/lifecycle", i)
 	return &patchOperation{Op: "add", Path: path, Value: *lifeCycle}
 }

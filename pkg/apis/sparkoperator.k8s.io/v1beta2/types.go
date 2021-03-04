@@ -518,6 +518,9 @@ type SparkPodSpec struct {
 	// HostAliases settings for the pod, following the Kubernetes specifications.
 	// +optional
 	HostAliases []apiv1.HostAlias `json:"hostAliases,omitempty"`
+	// Lifecycle for running preStop or postStart commands
+	// +optional
+	Lifecycle *apiv1.Lifecycle `json:"lifecycle,omitempty"`
 }
 
 // DriverSpec is specification of the driver.
@@ -538,9 +541,6 @@ type DriverSpec struct {
 	// GC settings or other logging.
 	// +optional
 	JavaOptions *string `json:"javaOptions,omitempty"`
-	// Lifecycle for running preStop or postStart commands
-	// +optional
-	Lifecycle *apiv1.Lifecycle `json:"lifecycle,omitempty"`
 	// KubernetesMaster is the URL of the Kubernetes master used by the driver to manage executor pods and
 	// other Kubernetes resources. Default to https://kubernetes.default.svc.
 	// +optional
