@@ -4339,7 +4339,12 @@ spec:
               type: integer
             executorState:
               additionalProperties:
-                type: string
+                properties:
+                  state:
+                    type: string
+                  errorMessage:
+                    type: string
+                type: object
               type: object
             lastSubmissionAttemptTime:
               format: date-time

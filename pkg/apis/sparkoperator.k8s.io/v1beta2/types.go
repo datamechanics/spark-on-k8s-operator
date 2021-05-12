@@ -358,17 +358,23 @@ const (
 	DriverUnknownState   DriverState = "UNKNOWN"
 )
 
-// ExecutorState tells the current state of an executor.
-type ExecutorState string
+// ExecutorStateType represents the type of the current state of an executor.
+type ExecutorStateType string
 
 // Different states an executor may have.
 const (
-	ExecutorPendingState   ExecutorState = "PENDING"
-	ExecutorRunningState   ExecutorState = "RUNNING"
-	ExecutorCompletedState ExecutorState = "COMPLETED"
-	ExecutorFailedState    ExecutorState = "FAILED"
-	ExecutorUnknownState   ExecutorState = "UNKNOWN"
+	ExecutorPendingState   ExecutorStateType = "PENDING"
+	ExecutorRunningState   ExecutorStateType = "RUNNING"
+	ExecutorCompletedState ExecutorStateType = "COMPLETED"
+	ExecutorFailedState    ExecutorStateType = "FAILED"
+	ExecutorUnknownState   ExecutorStateType = "UNKNOWN"
 )
+
+// ExecutorState tells the current state of an executor and an error message in case of failures.
+type ExecutorState struct {
+	State        ExecutorStateType `json:"state"`
+	ErrorMessage string            `json:"errorMessage,omitempty"`
+}
 
 // SparkApplicationStatus describes the current status of a Spark application.
 type SparkApplicationStatus struct {

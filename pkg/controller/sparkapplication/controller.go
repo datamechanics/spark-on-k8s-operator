@@ -366,10 +366,10 @@ func (c *Controller) getAndUpdateExecutorState(app *v1beta2.SparkApplication) er
 	var executorApplicationID string
 	for _, pod := range pods {
 		if util.IsExecutorPod(pod) {
-			newState := podPhaseToExecutorState(pod.Status.Phase)
+			newState := podStatusToExecutorState(pod.Status)
 			oldState, exists := app.Status.ExecutorState[pod.Name]
 			// Only record an executor event if the executor state is new or it has changed.
-			if !exists || newState != oldState {
+			if !exists || newState.State != oldState.State {
 				c.recordExecutorEvent(app, newState, pod.Name)
 			}
 			executorStateMap[pod.Name] = newState
@@ -402,13 +402,13 @@ func (c *Controller) getAndUpdateExecutorState(app *v1beta2.SparkApplication) er
 				// successfully. The executor pods terminate and are cleaned up, so we could not found
 				// the executor pod, under this circumstances, we assume the executor pod are completed.
 				if app.Status.AppState.State == v1beta2.CompletedState {
-					app.Status.ExecutorState[name] = v1beta2.ExecutorCompletedState
+					app.Status.ExecutorState[name] = v1beta2.ExecutorState{State: v1beta2.ExecutorCompletedState}
 				} else {
 					glog.Infof("Executor pod %s not found, assuming it was deleted.", name)
-					app.Status.ExecutorState[name] = v1beta2.ExecutorFailedState
+					app.Status.ExecutorState[name] = v1beta2.ExecutorState{State: v1beta2.ExecutorFailedState}
 				}
 			} else {
-				app.Status.ExecutorState[name] = v1beta2.ExecutorUnknownState
+				app.Status.ExecutorState[name] = v1beta2.ExecutorState{State: v1beta2.ExecutorUnknownState}
 			}
 		}
 	}
@@ -967,7 +967,7 @@ func (c *Controller) recordDriverEvent(app *v1beta2.SparkApplication, phase v1be
 }
 
 func (c *Controller) recordExecutorEvent(app *v1beta2.SparkApplication, state v1beta2.ExecutorState, name string) {
-	switch state {
+	switch state.State {
 	case v1beta2.ExecutorCompletedState:
 		c.recorder.Eventf(app, apiv1.EventTypeNormal, "SparkExecutorCompleted", "Executor %s completed", name)
 	case v1beta2.ExecutorPendingState:
@@ -975,7 +975,7 @@ func (c *Controller) recordExecutorEvent(app *v1beta2.SparkApplication, state v1
 	case v1beta2.ExecutorRunningState:
 		c.recorder.Eventf(app, apiv1.EventTypeNormal, "SparkExecutorRunning", "Executor %s is running", name)
 	case v1beta2.ExecutorFailedState:
-		c.recorder.Eventf(app, apiv1.EventTypeWarning, "SparkExecutorFailed", "Executor %s failed", name)
+		c.recorder.Eventf(app, apiv1.EventTypeWarning, "SparkExecutorFailed", "Executor %s failed: (%s)", name, state.ErrorMessage)
 	case v1beta2.ExecutorUnknownState:
 		c.recorder.Eventf(app, apiv1.EventTypeWarning, "SparkExecutorUnknownState", "Executor %s in unknown state", name)
 	}

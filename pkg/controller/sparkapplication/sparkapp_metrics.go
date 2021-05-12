@@ -250,7 +250,7 @@ func (sm *sparkAppMetrics) exportMetrics(oldApp, newApp *v1beta2.SparkApplicatio
 	oldExecutorStates := oldApp.Status.ExecutorState
 	// Potential Executor status updates
 	for executor, newExecState := range newApp.Status.ExecutorState {
-		switch newExecState {
+		switch newExecState.State {
 		case v1beta2.ExecutorRunningState:
 			if oldExecutorStates[executor] != newExecState {
 				glog.V(2).Infof("Exporting Metrics for Executor %s. OldState: %v NewState: %v", executor,

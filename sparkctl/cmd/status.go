@@ -80,7 +80,7 @@ func printStatus(app *v1beta2.SparkApplication) {
 		table := tablewriter.NewWriter(os.Stdout)
 		table.SetHeader([]string{"Executor Pod", "State"})
 		for executorPod, state := range app.Status.ExecutorState {
-			table.Append([]string{executorPod, string(state)})
+			table.Append([]string{executorPod, string(state.State)})
 		}
 		table.Render()
 	}

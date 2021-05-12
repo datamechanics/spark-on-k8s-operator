@@ -960,7 +960,7 @@ func TestSyncSparkApplication_ExecutingState(t *testing.T) {
 			DriverInfo: v1beta2.DriverInfo{
 				PodName: driverPodName,
 			},
-			ExecutorState: map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorRunningState},
+			ExecutorState: map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorRunningState}},
 		},
 	}
 
@@ -968,9 +968,9 @@ func TestSyncSparkApplication_ExecutingState(t *testing.T) {
 		{
 			appName:               appName,
 			oldAppStatus:          v1beta2.SubmittedState,
-			oldExecutorStatus:     map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorRunningState},
+			oldExecutorStatus:     map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorRunningState}},
 			expectedAppState:      v1beta2.FailingState,
-			expectedExecutorState: map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorFailedState},
+			expectedExecutorState: map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorFailedState}},
 			expectedAppMetrics: metrics{
 				failedMetricCount: 1,
 			},
@@ -981,7 +981,7 @@ func TestSyncSparkApplication_ExecutingState(t *testing.T) {
 		{
 			appName:           appName,
 			oldAppStatus:      v1beta2.SubmittedState,
-			oldExecutorStatus: map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorRunningState},
+			oldExecutorStatus: map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorRunningState}},
 			driverPod: &apiv1.Pod{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      driverPodName,
@@ -1011,7 +1011,7 @@ func TestSyncSparkApplication_ExecutingState(t *testing.T) {
 				},
 			},
 			expectedAppState:      v1beta2.RunningState,
-			expectedExecutorState: map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorCompletedState},
+			expectedExecutorState: map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorCompletedState}},
 			expectedAppMetrics: metrics{
 				runningMetricCount: 1,
 			},
@@ -1022,7 +1022,7 @@ func TestSyncSparkApplication_ExecutingState(t *testing.T) {
 		{
 			appName:           appName,
 			oldAppStatus:      v1beta2.RunningState,
-			oldExecutorStatus: map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorRunningState},
+			oldExecutorStatus: map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorRunningState}},
 			driverPod: &apiv1.Pod{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      driverPodName,
@@ -1068,7 +1068,7 @@ func TestSyncSparkApplication_ExecutingState(t *testing.T) {
 				},
 			},
 			expectedAppState:      v1beta2.RunningState,
-			expectedExecutorState: map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorCompletedState},
+			expectedExecutorState: map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorCompletedState}},
 			expectedAppMetrics:    metrics{},
 			expectedExecutorMetrics: executorMetrics{
 				successMetricCount: 1,
@@ -1077,7 +1077,7 @@ func TestSyncSparkApplication_ExecutingState(t *testing.T) {
 		{
 			appName:           appName,
 			oldAppStatus:      v1beta2.RunningState,
-			oldExecutorStatus: map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorRunningState},
+			oldExecutorStatus: map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorRunningState}},
 			driverPod: &apiv1.Pod{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      driverPodName,
@@ -1123,7 +1123,7 @@ func TestSyncSparkApplication_ExecutingState(t *testing.T) {
 				},
 			},
 			expectedAppState:      v1beta2.SucceedingState,
-			expectedExecutorState: map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorCompletedState},
+			expectedExecutorState: map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorCompletedState}},
 			expectedAppMetrics: metrics{
 				successMetricCount: 1,
 			},
@@ -1134,7 +1134,7 @@ func TestSyncSparkApplication_ExecutingState(t *testing.T) {
 		{
 			appName:           appName,
 			oldAppStatus:      v1beta2.RunningState,
-			oldExecutorStatus: map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorRunningState},
+			oldExecutorStatus: map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorRunningState}},
 			driverPod: &apiv1.Pod{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      driverPodName,
@@ -1181,7 +1181,7 @@ func TestSyncSparkApplication_ExecutingState(t *testing.T) {
 				},
 			},
 			expectedAppState:      v1beta2.FailingState,
-			expectedExecutorState: map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorCompletedState},
+			expectedExecutorState: map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorCompletedState}},
 			expectedAppMetrics: metrics{
 				failedMetricCount: 1,
 			},
@@ -1192,7 +1192,7 @@ func TestSyncSparkApplication_ExecutingState(t *testing.T) {
 		{
 			appName:           appName,
 			oldAppStatus:      v1beta2.RunningState,
-			oldExecutorStatus: map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorRunningState},
+			oldExecutorStatus: map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorRunningState}},
 			driverPod: &apiv1.Pod{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      driverPodName,
@@ -1230,10 +1230,21 @@ func TestSyncSparkApplication_ExecutingState(t *testing.T) {
 				},
 				Status: apiv1.PodStatus{
 					Phase: apiv1.PodFailed,
+					ContainerStatuses: []apiv1.ContainerStatus{
+						{
+							Name: config.SparkExecutorContainerName,
+							State: apiv1.ContainerState{
+								Terminated: &apiv1.ContainerStateTerminated{
+									ExitCode: 137,
+									Reason:   "OOMKilled",
+								},
+							},
+						},
+					},
 				},
 			},
 			expectedAppState:      v1beta2.FailingState,
-			expectedExecutorState: map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorFailedState},
+			expectedExecutorState: map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorFailedState, ErrorMessage: "Reason: OOMKilled, ExitCode: 137"}},
 			expectedAppMetrics: metrics{
 				failedMetricCount: 1,
 			},
@@ -1244,7 +1255,7 @@ func TestSyncSparkApplication_ExecutingState(t *testing.T) {
 		{
 			appName:           appName,
 			oldAppStatus:      v1beta2.RunningState,
-			oldExecutorStatus: map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorRunningState},
+			oldExecutorStatus: map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorRunningState}},
 			driverPod: &apiv1.Pod{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      driverPodName,
@@ -1293,7 +1304,7 @@ func TestSyncSparkApplication_ExecutingState(t *testing.T) {
 				},
 			},
 			expectedAppState:      v1beta2.SucceedingState,
-			expectedExecutorState: map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorCompletedState},
+			expectedExecutorState: map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorCompletedState}},
 			expectedAppMetrics: metrics{
 				successMetricCount: 1,
 			},
@@ -1304,16 +1315,16 @@ func TestSyncSparkApplication_ExecutingState(t *testing.T) {
 		{
 			appName:                 appName,
 			oldAppStatus:            v1beta2.FailingState,
-			oldExecutorStatus:       map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorFailedState},
+			oldExecutorStatus:       map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorFailedState}},
 			expectedAppState:        v1beta2.FailedState,
-			expectedExecutorState:   map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorFailedState},
+			expectedExecutorState:   map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorFailedState}},
 			expectedAppMetrics:      metrics{},
 			expectedExecutorMetrics: executorMetrics{},
 		},
 		{
 			appName:           appName,
 			oldAppStatus:      v1beta2.RunningState,
-			oldExecutorStatus: map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorRunningState},
+			oldExecutorStatus: map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorRunningState}},
 			driverPod: &apiv1.Pod{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      driverPodName,
@@ -1343,7 +1354,7 @@ func TestSyncSparkApplication_ExecutingState(t *testing.T) {
 				},
 			},
 			expectedAppState:      v1beta2.SucceedingState,
-			expectedExecutorState: map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorCompletedState},
+			expectedExecutorState: map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorCompletedState}},
 			expectedAppMetrics: metrics{
 				successMetricCount: 1,
 			},
@@ -1354,9 +1365,9 @@ func TestSyncSparkApplication_ExecutingState(t *testing.T) {
 		{
 			appName:                 appName,
 			oldAppStatus:            v1beta2.SucceedingState,
-			oldExecutorStatus:       map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorCompletedState},
+			oldExecutorStatus:       map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorCompletedState}},
 			expectedAppState:        v1beta2.CompletedState,
-			expectedExecutorState:   map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorCompletedState},
+			expectedExecutorState:   map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorCompletedState}},
 			expectedAppMetrics:      metrics{},
 			expectedExecutorMetrics: executorMetrics{},
 		},
@@ -1391,14 +1402,14 @@ func TestSyncSparkApplication_ExecutingState(t *testing.T) {
 				},
 			},
 			expectedAppState:        v1beta2.UnknownState,
-			expectedExecutorState:   map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorPendingState},
+			expectedExecutorState:   map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorPendingState}},
 			expectedAppMetrics:      metrics{},
 			expectedExecutorMetrics: executorMetrics{},
 		},
 		{
 			appName:           appName,
 			oldAppStatus:      v1beta2.CompletedState,
-			oldExecutorStatus: map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorPendingState},
+			oldExecutorStatus: map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorPendingState}},
 			driverPod: &apiv1.Pod{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      driverPodName,
@@ -1414,7 +1425,7 @@ func TestSyncSparkApplication_ExecutingState(t *testing.T) {
 				},
 			},
 			expectedAppState:      v1beta2.CompletedState,
-			expectedExecutorState: map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorCompletedState},
+			expectedExecutorState: map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorCompletedState}},
 			expectedAppMetrics:    metrics{},
 			expectedExecutorMetrics: executorMetrics{
 				successMetricCount: 1,
@@ -1423,7 +1434,7 @@ func TestSyncSparkApplication_ExecutingState(t *testing.T) {
 		{
 			appName:           appName,
 			oldAppStatus:      v1beta2.RunningState,
-			oldExecutorStatus: map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorRunningState},
+			oldExecutorStatus: map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorRunningState}},
 			driverPod: &apiv1.Pod{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      driverPodName,
@@ -1439,7 +1450,7 @@ func TestSyncSparkApplication_ExecutingState(t *testing.T) {
 				},
 			},
 			expectedAppState:        v1beta2.RunningState,
-			expectedExecutorState:   map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorUnknownState},
+			expectedExecutorState:   map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorUnknownState}},
 			expectedAppMetrics:      metrics{},
 			expectedExecutorMetrics: executorMetrics{},
 		},
@@ -1529,7 +1540,7 @@ func TestSyncSparkApplication_ApplicationExpired(t *testing.T) {
 			TerminationTime: metav1.Time{
 				Time: terminationTime,
 			},
-			ExecutorState: map[string]v1beta2.ExecutorState{"exec-1": v1beta2.ExecutorCompletedState},
+			ExecutorState: map[string]v1beta2.ExecutorState{"exec-1": {State: v1beta2.ExecutorCompletedState}},
 		},
 	}
 

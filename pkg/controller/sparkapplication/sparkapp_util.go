@@ -100,23 +100,40 @@ func getIngressTlsHosts(app *v1beta2.SparkApplication) []v1beta1.IngressTLS {
 	return ingressTls
 }
 
-func podPhaseToExecutorState(podPhase apiv1.PodPhase) v1beta2.ExecutorState {
-	switch podPhase {
+func podStatusToExecutorState(podStatus apiv1.PodStatus) v1beta2.ExecutorState {
+	switch podStatus.Phase {
 	case apiv1.PodPending:
-		return v1beta2.ExecutorPendingState
+		return v1beta2.ExecutorState{State: v1beta2.ExecutorPendingState}
 	case apiv1.PodRunning:
-		return v1beta2.ExecutorRunningState
+		return v1beta2.ExecutorState{State: v1beta2.ExecutorRunningState}
 	case apiv1.PodSucceeded:
-		return v1beta2.ExecutorCompletedState
+		return v1beta2.ExecutorState{State: v1beta2.ExecutorCompletedState}
 	case apiv1.PodFailed:
-		return v1beta2.ExecutorFailedState
+		state := getExecutorContainerTerminatedState(podStatus)
+		errorMessage := ""
+		if state != nil {
+			errorMessage = fmt.Sprintf("Reason: %s, ExitCode: %d", state.Reason, state.ExitCode)
+		}
+		return v1beta2.ExecutorState{State: v1beta2.ExecutorFailedState, ErrorMessage: errorMessage}
 	default:
-		return v1beta2.ExecutorUnknownState
+		return v1beta2.ExecutorState{State: v1beta2.ExecutorUnknownState}
 	}
 }
 
+func getExecutorContainerTerminatedState(podStatus apiv1.PodStatus) *apiv1.ContainerStateTerminated {
+	for _, c := range podStatus.ContainerStatuses {
+		if c.Name == config.SparkExecutorContainerName {
+			if c.State.Terminated != nil {
+				return c.State.Terminated
+			}
+			return nil
+		}
+	}
+	return nil
+}
+
 func isExecutorTerminated(executorState v1beta2.ExecutorState) bool {
-	return executorState == v1beta2.ExecutorCompletedState || executorState == v1beta2.ExecutorFailedState
+	return executorState.State == v1beta2.ExecutorCompletedState || executorState.State == v1beta2.ExecutorFailedState
 }
 
 func isDriverRunning(app *v1beta2.SparkApplication) bool {

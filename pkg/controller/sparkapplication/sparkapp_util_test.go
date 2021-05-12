@@ -32,7 +32,9 @@ var expectedStatusString = `{
     "state": "COMPLETED"
   },
   "executorState": {
-    "executor-1": "COMPLETED"
+    "executor-1": {
+      "state": "COMPLETED"
+    }
   }
 }`
 
@@ -44,7 +46,7 @@ func TestPrintStatus(t *testing.T) {
 			State: v1beta2.CompletedState,
 		},
 		ExecutorState: map[string]v1beta2.ExecutorState{
-			"executor-1": v1beta2.ExecutorCompletedState,
+			"executor-1": {State: v1beta2.ExecutorCompletedState},
 		},
 	}
 
